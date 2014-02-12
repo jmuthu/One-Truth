@@ -21,14 +21,14 @@ public class FeaturesResource {
    
    private FeatureRepositoryGit featureRepo;
    public FeaturesResource(FeatureRepositoryGit repo) {
-        FeatureRepo = repo;
+        featureRepo = repo;
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{name}")
     @Timed
-    public Feature getFeature(@PathParam("id") Integer id) {
-        Feature p = featureRepo.findById(id);
+    public Feature getFeature(@PathParam("name") String name) {
+        Feature p = featureRepo.get(name);
         if (p != null) {
             return p;
         } else {
@@ -39,7 +39,7 @@ public class FeaturesResource {
     @GET
     @Timed
     public List<Feature> listFeatures() {
-        return featureRepo.getAll();
+        return featureRepo.search("");
     }
 /*
     @POST

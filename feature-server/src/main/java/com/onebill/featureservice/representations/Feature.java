@@ -1,5 +1,9 @@
 package com.onebill.featureservice.representations;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Per Spilling
  */
@@ -13,7 +17,7 @@ public class Feature {
     	public String steps;
    	}
     
-    private List<Feature.Scenario> scenarios;
+    private List<Feature.Scenario> scenarios = Collections.synchronizedList(new ArrayList<Feature.Scenario>());
     
 
     public Feature() {
@@ -24,7 +28,7 @@ public class Feature {
         this.desc = desc;
     }
 
-    public Feature(String title, String desc, List<Scenario> scenarios) {
+    public Feature(String title, String desc, List<Feature.Scenario> scenarios) {
         this.title = title;
         this.desc = desc;
         this.scenarios = scenarios;
@@ -57,7 +61,7 @@ public class Feature {
         this.desc = desc;
     }
 
-    public String getscenarios() {
+    public List<Feature.Scenario> getscenarios() {
         return scenarios;
     }
 

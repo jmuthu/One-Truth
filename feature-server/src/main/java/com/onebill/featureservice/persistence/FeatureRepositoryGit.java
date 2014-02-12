@@ -3,12 +3,10 @@ package com.onebill.featureservice.persistence;
 import com.onebill.featureservice.representations.Feature;
 
 import java.util.List;
-import java.util.UUID;
-
 
 public class FeatureRepositoryGit {
 
-  public Feature find(Id tid) {
+  public Feature get(String name) {
     return null;
   }
 
@@ -17,7 +15,7 @@ public class FeatureRepositoryGit {
   }
 
   
-  public List<Feature> find(String query) {
+  public List<Feature> search(String query) {
     return null;
   }
 
