@@ -7,8 +7,7 @@ import com.onebill.featureservice.persistence.FeatureRepositoryGit;
 import com.onebill.featureservice.resources.FeaturesResource;
 import com.onebill.featureservice.FeatureServiceConfiguration;
 import com.onebill.featureservice.health.FeatureServiceHealthCheck;
-import org.h2.jdbcx.JdbcConnectionPool;
-import org.skife.jdbi.v2.DBI;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +35,7 @@ public class FeatureService extends Service<FeatureServiceConfiguration> {
     @Override
     public void run(FeatureServiceConfiguration conf, Environment env) throws ClassNotFoundException {
         String template = conf.getTemplate();
-        String defaultName = conf.getDefaultName();
+      //  String defaultName = conf.getDefaultName();
 
     	env.addResource(new FeaturesResource(repo));
         env.addHealthCheck(new FeatureServiceHealthCheck(template));
