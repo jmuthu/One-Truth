@@ -1,7 +1,8 @@
 package com.onebill.featureservice.resources;
 
 import com.yammer.metrics.annotation.Timed;
-import com.onebill.featureservice.represetantions.Feature;
+import com.onebill.featureservice.representations.Feature;
+import com.onebill.featureservice.persistence.FeatureRepositoryGit;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -18,8 +19,8 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class FeaturesResource {
    
-
-    public FeaturesResource(FeatureRepo repo) {
+   private FeatureRepositoryGit featureRepo;
+   public FeaturesResource(FeatureRepositoryGit repo) {
         FeatureRepo = repo;
     }
 
@@ -27,7 +28,7 @@ public class FeaturesResource {
     @Path("/{id}")
     @Timed
     public Feature getFeature(@PathParam("id") Integer id) {
-        Feature p = FeatureRepo.findById(id);
+        Feature p = featureRepo.findById(id);
         if (p != null) {
             return p;
         } else {
@@ -38,17 +39,17 @@ public class FeaturesResource {
     @GET
     @Timed
     public List<Feature> listFeatures() {
-        return FeatureRepo.getAll();
+        return featureRepo.getAll();
     }
-
+/*
     @POST
     @Timed
     public void save(Feature Feature) {
         if (Feature != null && Feature.isValid()) {
             if (Feature.getId() != null) {
-                FeatureRepo.update(Feature);
+                featureRepo.update(Feature);
             } else {
-                FeatureRepo.insert(Feature);
+                featureRepo.insert(Feature);
             }
         }
     }
@@ -61,11 +62,12 @@ public class FeaturesResource {
         /**
          * Note: AngularJS $resource will send a DELETE request as content-type test/plain for some reason;
          * so therefore we must add MediaType.TEXT_PLAIN here.
-         */
+         *
         if (FeatureRepo.findById(id) != null) {
-            FeatureRepo.deleteById(id);
+            featureRepo.deleteById(id);
         } else {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }
+    */
 }

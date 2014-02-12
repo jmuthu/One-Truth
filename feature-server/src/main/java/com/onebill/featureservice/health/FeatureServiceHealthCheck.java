@@ -1,4 +1,4 @@
-package com.tarshan.onebill.featureservice.health;
+package com.onebill.featureservice.health;
 
 import com.yammer.metrics.core.HealthCheck;
 
