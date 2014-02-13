@@ -7,15 +7,15 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class FeatureServiceConfiguration extends Configuration {
     @NotEmpty
     @JsonProperty
-    private String template;
+    private String url;
 
     
     @NotEmpty
     @JsonProperty
     private String defaultName = "Stranger";
 
-    public String getTemplate() {
-        return template;
+    public String getUrl() {
+        return url;
     }
 
     public String getDefaultName() {

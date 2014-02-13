@@ -8,7 +8,6 @@ import com.onebill.featureservice.resources.FeaturesResource;
 import com.onebill.featureservice.FeatureServiceConfiguration;
 import com.onebill.featureservice.health.FeatureServiceHealthCheck;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,9 +19,7 @@ import java.util.List;
  */
 public class FeatureService extends Service<FeatureServiceConfiguration> {
 
-    private static FeatureRepositoryGit repo;
-
-
+    
     public static void main(String[] args) throws Exception {
         new FeatureService().run(args);
     }
@@ -34,11 +31,15 @@ public class FeatureService extends Service<FeatureServiceConfiguration> {
 
     @Override
     public void run(FeatureServiceConfiguration conf, Environment env) throws ClassNotFoundException {
-        String template = conf.getTemplate();
+    	String url= conf.getUrl();
+    	System.out.println(url);
+    	FeatureRepositoryGit repo = new FeatureRepositoryGit();
+    	repo.init(url);
+    	
       //  String defaultName = conf.getDefaultName();
 
     	env.addResource(new FeaturesResource(repo));
-        env.addHealthCheck(new FeatureServiceHealthCheck(template));
+        env.addHealthCheck(new FeatureServiceHealthCheck(url));
     }
 
 }

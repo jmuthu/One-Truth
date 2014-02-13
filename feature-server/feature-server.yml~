@@ -1,8 +1,8 @@
 #
 # For defaults, see: http://dropwizard.codahale.com/manual/core/#configuration-defaults
 #
-url: /home/joe/Documents/onebill_docs/ 
-
+template: Hello, %s!
+defaultName: Stranger
 
 
 # Avoid using the default 8080 port for RESTFul services
