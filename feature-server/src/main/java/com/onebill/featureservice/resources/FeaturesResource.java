@@ -1,7 +1,8 @@
 package com.onebill.featureservice.resources;
 
 import com.yammer.metrics.annotation.Timed;
-import com.onebill.featureservice.representations.Feature;
+//import com.onebill.featureservice.representations.Feature;
+import gherkin.formatter.model.Feature;
 import com.onebill.featureservice.persistence.FeatureRepositoryGit;
 
 import javax.ws.rs.*;
@@ -11,7 +12,7 @@ import java.util.List;
 
 /**
  * The resource used to handle Feature requests.
- *
+ * 
  * @author Per Spilling
  */
 @Path("/features")
@@ -25,17 +26,28 @@ public class FeaturesResource {
     }
 
     @GET
-    @Path("/{name}")
+    @Path("/directory/{id}")
     @Timed
-    public Feature getFeature(@PathParam("name") String name) {
-        Feature p = featureRepo.get(name);
+    public String getDirContents(@PathParam("id") String id) {
+        String p = featureRepo.getDirContents(id);
         if (p != null) {
             return p;
         } else {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }
-
+    
+    @GET
+    @Path("/feature/{id}")
+    @Timed
+    public Feature getFeature(@PathParam("id") String id) {
+        Feature p = featureRepo.getFeatureContents(id);
+        if (p != null) {
+            return p;
+        } else {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+    }
     @GET
     @Timed
     public List<Feature> listFeatures() {
