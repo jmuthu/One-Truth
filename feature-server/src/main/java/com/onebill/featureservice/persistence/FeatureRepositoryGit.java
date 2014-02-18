@@ -4,10 +4,10 @@ package com.onebill.featureservice.persistence;
 
 import gherkin.formatter.JSONFormatter;
 import gherkin.parser.Parser;
-import gherkin.util.FixJava;
 import gherkin.formatter.model.Feature;
 
 import com.google.gson.Gson;
+import com.onebill.featureservice.FeatureService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,8 +27,12 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FeatureRepositoryGit {
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(FeatureRepositoryGit.class);
 	private String uri;
 	private Repository repository;
 	private Ref head;
@@ -54,46 +58,70 @@ public class FeatureRepositoryGit {
 			// that is
 			// defined
 			walk = new RevWalk(repository);
+		} catch (IOException e) {
+			 LOGGER.info("Error opening the repository" + this.uri);
+			return false;
+		}
+		return true;
+	}
 
+	public String getRoot() {
+		try {
 			RevCommit commit = walk.parseCommit(head.getObjectId());
 			RevTree tree = commit.getTree();
-			System.out.println("Having tree: " + tree);
-
 			// now use a TreeWalk to iterate over all files in the Tree
 			// recursively
 			// you can set Filters to narrow down the results if needed
 			TreeWalk treeWalk = new TreeWalk(repository);
 			treeWalk.addTree(tree);
+			return getDirContents(treeWalk);
+		} catch (IOException e) {
+			 LOGGER.info("Error opening the repository" + this.uri);
+			return null;
+		}
+
+	}
+
+	public String getDirContents(TreeWalk treeWalk) throws IOException {
+		String result = new String();
+
+		try {
 			treeWalk.setRecursive(false);
 			while (treeWalk.next()) {
 				if (treeWalk.isSubtree()) {
-					System.out.println("dir: " + treeWalk.getPathString()
-							+ treeWalk.getObjectId(0));
-					treeWalk.enterSubtree();
+					result += "dir: " + treeWalk.getPathString() + treeWalk.getNameString()
+							+ treeWalk.getObjectId(0);
+					// treeWalk.enterSubtree();
 				} else {
-					System.out.println("file: " + treeWalk.getPathString()
-							+ treeWalk.getObjectId(0));
+					result += "file: " + treeWalk.getPathString() + treeWalk.getNameString()
+							+ treeWalk.getObjectId(0);
 				}
 			}
-
-			System.out.println("Having repository: "
-					+ repository.getDirectory());
-
-		} catch (IOException e) {
-			System.out.println("Error opening the repository" + this.uri);
-			return false;
+		} catch (IOException io) {
+			 LOGGER.info("Error walking the repository" + io.getMessage());
+			throw io;
 		}
-
-		return true;
+		return result;
 	}
 
-	public Feature getFeatureContents(String id) {
+	public String getDirContents(String id) {
+		try {
+			TreeWalk treeWalk = new TreeWalk(repository);
+			treeWalk.addTree(ObjectId.fromString(id));
+			return getDirContents(treeWalk);
+		} catch (IOException io) {
+			 LOGGER.info("error retrieving directory contents");
+			return null;
+		}
+	}
+
+	public String getFeatureContents(String id) {
 		try {
 			// String path =
 			// "/home/joe/Documents/onebill_docs/Dashboard/BusinessDashboard.feature";
 			// String gherkin = FixJava.readReader(new InputStreamReader(
 			// new FileInputStream(path), "UTF-8"));
-			
+
 			ObjectLoader loader = repository.open(ObjectId.fromString(id));
 			StringBuilder json = new StringBuilder();
 
@@ -101,52 +129,22 @@ public class FeatureRepositoryGit {
 			Parser parser = new Parser(formatter);
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			loader.copyTo(os);
-			String aString = new String(os.toByteArray(),"US-ASCII");
-			//System.out.println("file : " + aString);
+			String aString = new String(os.toByteArray(), "UTF-8");
+			//  LOGGER.info("file : " + aString);
 			parser.parse(aString, uri, 0);
 			formatter.done();
 			formatter.close();
-			System.out.println("json: '" + json + "'"); // Gherkin source as
-			Gson gson = new Gson();
-			Feature feature = gson.fromJson(json.toString(), Feature.class);
-			return feature;
+			//  LOGGER.info("json: '" + json + "'"); // Gherkin source as
+			// Gson gson = new Gson();
+			// Feature feature = gson.fromJson(json.toString(), Feature.class);
+			return json.toString();
 		} catch (IOException io) {
-			System.out.println("error");
+			 LOGGER.info("error" + io.getMessage());
 		}
 		return null;
-	}
-
-	public void store(Feature feature) {
-
 	}
 
 	public List<Feature> search(String query) {
 		return null;
 	}
-
-	public String getDirContents(String id) {
-		// TODO Auto-generated method stub
-	    String result = new String();
-		try {
-			RevCommit commit = walk.parseCommit(head.getObjectId());
-			RevTree tree = commit.getTree();
-		    TreeWalk treeWalk = new TreeWalk(repository);
-		    treeWalk.addTree(tree);
-		    treeWalk.setRecursive(false);
-		    while (treeWalk.next()) {
-				if (treeWalk.isSubtree()) {
-					result = result + "\ndir: " + treeWalk.getPathString()
-							+ treeWalk.getObjectId(0);
-				} else {
-					result = result + "\nfile: " + treeWalk.getPathString()
-							+ treeWalk.getObjectId(0);
-				}
-			}
-
-		} catch (IOException io) {
-			System.out.println("error retrieving directory contents");
-		}
-		return result;
-	}
-
 }

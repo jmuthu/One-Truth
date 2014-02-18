@@ -1,13 +1,17 @@
 package com.onebill.featureservice.resources;
 
+import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
+
 //import com.onebill.featureservice.representations.Feature;
 import gherkin.formatter.model.Feature;
+
 import com.onebill.featureservice.persistence.FeatureRepositoryGit;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.List;
 
 /**
@@ -40,18 +44,18 @@ public class FeaturesResource {
     @GET
     @Path("/feature/{id}")
     @Timed
-    public Feature getFeature(@PathParam("id") String id) {
-        Feature p = featureRepo.getFeatureContents(id);
-        if (p != null) {
-            return p;
+    public String getFeature(@PathParam("id") String id) {
+        String result = featureRepo.getFeatureContents(id);
+        if (result != null) {
+            return result;
         } else {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }
     @GET
     @Timed
-    public List<Feature> listFeatures() {
-        return featureRepo.search("");
+    public String getRoot(@Auth String user) {
+        return featureRepo.getRoot();
     }
 /*
     @POST

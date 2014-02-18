@@ -70,7 +70,11 @@
                 <artifactId>dropwizard-db</artifactId>
                 <version>${dw.version}</version>
             </dependency>
-
+	   <dependency>
+                <groupId>com.yammer.dropwizard</groupId>
+                <artifactId>dropwizard-auth</artifactId>
+                <version>${dw.version}</version>
+            </dependency>
 
             <!--
             Jetty (for the angularjs-webapp). Make sure that the version corresponds with the Jetty
