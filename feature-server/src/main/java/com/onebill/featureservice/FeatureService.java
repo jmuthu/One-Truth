@@ -6,6 +6,7 @@ import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.onebill.featureservice.persistence.FeatureRepositoryGit;
+import com.onebill.featureservice.representations.User;
 import com.onebill.featureservice.resources.FeaturesResource;
 import com.onebill.featureservice.FeatureServiceConfiguration;
 import com.onebill.featureservice.auth.FeatureAuthenticator;
@@ -43,6 +44,7 @@ public class FeatureService extends Service<FeatureServiceConfiguration> {
 			throws ClassNotFoundException {
 		String url = conf.getUrl();
 		LOGGER.info(url);
+		
 		FeatureRepositoryGit repo = new FeatureRepositoryGit();
 		if (!repo.init(url)) {
 			LOGGER.info("Unable to read repositories");
@@ -50,10 +52,10 @@ public class FeatureService extends Service<FeatureServiceConfiguration> {
 		}
 
 		// String defaultName = conf.getDefaultName();
-		env.addProvider(new BasicAuthProvider<String>(CachingAuthenticator
+		env.addProvider(new BasicAuthProvider<User>(CachingAuthenticator
 				.wrap(new FeatureAuthenticator(),
 						conf.getAuthenticationCachePolicy()),
-				"SUPER SECRET STUFF"));
+				"Protected Service, credentials are required"));
 		env.addResource(new FeaturesResource(repo));
 		env.addHealthCheck(new FeatureServiceHealthCheck(url));
 	}
