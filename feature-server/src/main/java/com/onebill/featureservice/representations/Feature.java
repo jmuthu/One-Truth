@@ -3,12 +3,21 @@ package com.onebill.featureservice.representations;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * @author Per Spilling
  */
 public class Feature {
+	
+	
+	@JsonProperty
     private Integer id; // PK
+	@JsonProperty
     private String title;
     private String desc;
     

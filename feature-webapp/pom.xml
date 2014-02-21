@@ -33,8 +33,8 @@
             <artifactId>jetty-servlets</artifactId>
         </dependency>
 
-        <!-- JSP Support 
-        <dependency>
+        <!-- JSP Support --> 
+        <!-- <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>javax.servlet.jsp</artifactId>
         </dependency>
@@ -73,7 +73,7 @@
                     <assembleDirectory>target</assembleDirectory> 
                     <programs>
                         <program>
-                            <mainClass>com.onebill.webapp</mainClass>
+                            <mainClass>com.onebill.feature.FeatureWebapp</mainClass>
                             <name>webapp</name>
                         </program>
                     </programs>
@@ -96,6 +96,7 @@
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
+                <version>${project.version}</version>
                 <configuration>
                     <scanIntervalSeconds>0</scanIntervalSeconds>
                 </configuration>

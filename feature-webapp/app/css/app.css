@@ -4,7 +4,7 @@ body {
   padding-top: 20px;
 }
 
-.phones {
+.features {
   list-style: none;
 }
 
@@ -16,14 +16,14 @@ body {
   width: 100px;
 }
 
-.phones li {
+.feature li {
   clear: both;
   height: 100px;
   padding-top: 15px;
 }
 
 /** Detail View **/
-img.phone {
+img.feature {
   float: left;
   border: 1px solid black;
   margin-right: 3em;
@@ -34,50 +34,6 @@ img.phone {
   width: 400px;
 }
 
-ul.phone-thumbs {
-  margin: 0;
-  list-style: none;
-}
-
-ul.phone-thumbs li {
-  border: 1px solid black;
-  display: inline-block;
-  margin: 1em;
-  background-color: white;
-}
-
-ul.phone-thumbs img {
-  height: 100px;
-  width: 100px;
-  padding: 1em;
-}
-
-ul.phone-thumbs img:hover {
-  cursor: pointer;
-}
-
-
-ul.specs {
-  clear: both;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-ul.specs > li{
-  display: inline-block;
-  width: 200px;
-  vertical-align: top;
-}
-
-ul.specs > li > span{
-  font-weight: bold;
-  font-size: 1.2em;
-}
-
-ul.specs dt {
-  font-weight: bold;
-}
 
 h1 {
   border-bottom: 1px solid gray;

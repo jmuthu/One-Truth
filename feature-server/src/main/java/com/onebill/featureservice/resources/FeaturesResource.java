@@ -4,10 +4,12 @@ import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
 
 
+
 //import com.onebill.featureservice.representations.Feature;
 import gherkin.formatter.model.Feature;
 
 import com.onebill.featureservice.persistence.FeatureRepositoryGit;
+import com.onebill.featureservice.representations.FeatureSummary;
 import com.onebill.featureservice.representations.User;
 
 import javax.ws.rs.*;
@@ -34,10 +36,10 @@ public class FeaturesResource {
     @GET
     @Path("/directory/{id}")
     @Timed
-    public String getDirContents(@Auth User user, @PathParam("id") String id) {
-        String p = featureRepo.getDirContents(id);
-        if (p != null) {
-            return p;
+    public List<FeatureSummary> getDirContents(@Auth User user, @PathParam("id") String id) {
+        List<FeatureSummary> ret = featureRepo.getDirContents(id);
+        if (ret != null) {
+            return ret;
         } else {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
@@ -56,7 +58,7 @@ public class FeaturesResource {
     }
     @GET
     @Timed
-    public String getRoot(@Auth User user) {
+    public List<FeatureSummary> getRoot() {
         return featureRepo.getRoot();
     }
 /*
