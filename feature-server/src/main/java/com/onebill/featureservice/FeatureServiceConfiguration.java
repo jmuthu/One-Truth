@@ -15,17 +15,10 @@ public class FeatureServiceConfiguration extends Configuration {
     private CacheBuilderSpec authenticationCachePolicy;
 
     
-    @NotEmpty
-    @JsonProperty
-    private String defaultName = "Stranger";
-
-    public String getUrl() {
+   public String getUrl() {
         return url;
     }
 
-    public String getDefaultName() {
-        return defaultName;
-    }
     
     public CacheBuilderSpec getAuthenticationCachePolicy () {
     	return authenticationCachePolicy;

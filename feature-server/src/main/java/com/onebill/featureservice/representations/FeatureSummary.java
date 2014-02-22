@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public class FeatureSummary {
 	public enum FeatureType {
-		FEATURE_GROUP, FEATURE;
+		GROUP, FEATURE;
 
 		@Override
 		@JsonValue

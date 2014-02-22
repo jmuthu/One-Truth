@@ -3,22 +3,33 @@
 /* Services */
 
 var featureServices = angular.module('featureServices', [ 'ngResource' ]);
-
+/*
 featureServices.factory('Feature', [ '$resource', function($resource) {
-	return $resource('api/features/:featureId', {}, {
+	return $resource('api/features/feature/:featureId', {}, {
 		query : {
 			method : 'GET',
 			params : {
-				featureId : 'features'
+				featureId : 'Feature'
 			},
 			isArray : true
 		}
 	});
 } ]);
-
+*/
 featureServices.factory('Feature', [ '$resource', function($resource) {
-	return $resource('api/features', {}, {},
+	return $resource('api/features/group/:groupId', {}, {
+		query : {
+			method : 'GET',
+			params : {
+				groupId : 'root'
+			},
 			isArray : true
 		}
 	});
 } ]);
+/*
+
+featureServices.factory('Feature', [ '$resource', function($resource) {
+	return $resource('api/features', {}, {});
+} ]);
+*/

@@ -2,12 +2,14 @@ package com.onebill.featureservice.resources;
 
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
+import com.google.common.base.Optional;
 
 
 
 //import com.onebill.featureservice.representations.Feature;
 import gherkin.formatter.model.Feature;
 
+import com.google.common.base.Optional;
 import com.onebill.featureservice.persistence.FeatureRepositoryGit;
 import com.onebill.featureservice.representations.FeatureSummary;
 import com.onebill.featureservice.representations.User;
@@ -33,11 +35,18 @@ public class FeaturesResource {
         featureRepo = repo;
     }
 
+   @GET
+   @Path("/group/root")
+   @Timed
+   public List<FeatureSummary> getRoot() {
+       return featureRepo.getGroupContents(Optional.<String>absent());
+   }
+   
     @GET
-    @Path("/directory/{id}")
+    @Path("/group/{id}")
     @Timed
-    public List<FeatureSummary> getDirContents(@Auth User user, @PathParam("id") String id) {
-        List<FeatureSummary> ret = featureRepo.getDirContents(id);
+    public List<FeatureSummary> getGroup(@Auth User user, @PathParam("id") String id) {
+        List<FeatureSummary> ret = featureRepo.getGroupContents(Optional.of(id));
         if (ret != null) {
             return ret;
         } else {
@@ -56,11 +65,7 @@ public class FeaturesResource {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }
-    @GET
-    @Timed
-    public List<FeatureSummary> getRoot() {
-        return featureRepo.getRoot();
-    }
+    
 /*
     @POST
     @Timed

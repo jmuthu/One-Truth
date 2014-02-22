@@ -6,21 +6,16 @@ import gherkin.formatter.JSONFormatter;
 import gherkin.parser.Parser;
 import gherkin.formatter.model.Feature;
 
-import com.google.gson.Gson;
-import com.onebill.featureservice.FeatureService;
+import com.google.common.base.Optional;
 import com.onebill.featureservice.representations.FeatureSummary;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Ref;
@@ -68,7 +63,7 @@ public class FeatureRepositoryGit {
 		return true;
 	}
 
-	public List<FeatureSummary> getRoot() {
+	/*public List<FeatureSummary> getRoot() {
 		try {
 			RevCommit commit = walk.parseCommit(head.getObjectId());
 			RevTree tree = commit.getTree();
@@ -77,15 +72,15 @@ public class FeatureRepositoryGit {
 			// you can set Filters to narrow down the results if needed
 			TreeWalk treeWalk = new TreeWalk(repository);
 			treeWalk.addTree(tree);
-			return getDirContents(treeWalk);
+			return getGroupContents(treeWalk);
 		} catch (IOException e) {
 			LOGGER.info("Error opening the repository" + this.uri);
 			return null;
 		}
 
 	}
-
-	public List<FeatureSummary> getDirContents(TreeWalk treeWalk)
+*/
+	protected List<FeatureSummary> getGroupContents(TreeWalk treeWalk)
 			throws IOException {
 		String result = new String();
 		List<FeatureSummary> featureSummaryList = Collections
@@ -94,26 +89,21 @@ public class FeatureRepositoryGit {
 			treeWalk.setRecursive(false);
 
 			while (treeWalk.next()) {
+				String objectId = treeWalk.getObjectId(0).toString();
+				String Id = objectId.substring(objectId.indexOf('[') + 1,
+						objectId.indexOf(']'));
 				if (treeWalk.isSubtree()) {
 					featureSummaryList.add(new FeatureSummary(
-							FeatureSummary.FeatureType.FEATURE_GROUP, treeWalk
-									.getNameString(), treeWalk.getObjectId(0)
-									.toString()));
-					result += "dir: " + treeWalk.getPathString()
-							+ treeWalk.getNameString()
-							+ treeWalk.getObjectId(0);
+							FeatureSummary.FeatureType.GROUP, treeWalk
+									.getNameString(), Id));
 					// treeWalk.enterSubtree();
 				} else {
 					featureSummaryList.add(new FeatureSummary(
 							FeatureSummary.FeatureType.FEATURE, treeWalk
-									.getNameString(), treeWalk.getObjectId(0)
-									.toString()));
-					result += "file: " + treeWalk.getPathString()
-							+ treeWalk.getNameString()
-							+ treeWalk.getObjectId(0);
+									.getNameString(), Id));
 				}
 			}
-			LOGGER.info("Return value" + result);
+			LOGGER.info("Requested Group Contains " + featureSummaryList.size() + " objects");
 		} catch (IOException io) {
 			LOGGER.info("Error walking the repository" + io.getMessage());
 			throw io;
@@ -121,11 +111,20 @@ public class FeatureRepositoryGit {
 		return featureSummaryList;
 	}
 
-	public List<FeatureSummary> getDirContents(String id) {
+	public List<FeatureSummary> getGroupContents(Optional<String> id) {
 		try {
 			TreeWalk treeWalk = new TreeWalk(repository);
-			treeWalk.addTree(ObjectId.fromString(id));
-			return getDirContents(treeWalk);
+			if (id.isPresent()) {
+				treeWalk.addTree(ObjectId.fromString(id.get()));
+			} else {
+				RevCommit commit = walk.parseCommit(head.getObjectId());
+				RevTree tree = commit.getTree();
+				// now use a TreeWalk to iterate over all files in the Tree
+				// recursively
+				// you can set Filters to narrow down the results if needed
+				treeWalk.addTree(tree);
+			}
+			return getGroupContents(treeWalk);
 		} catch (IOException io) {
 			LOGGER.info("error retrieving directory contents");
 			return null;

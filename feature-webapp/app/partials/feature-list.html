@@ -8,8 +8,8 @@
       <!--Body content-->
 
       <ul class="features">
-        <li ng-repeat="feature in features" class="thumbnail">
-           <a href="#/directory/{{feature.id}}">{{feature.name}}</a>
+        <li ng-repeat="feature in group" class="thumbnail">
+           <a href="#/features/{{feature.type}}/{{feature.id}}">{{feature.name}}</a>
         </li>
       </ul>
 
