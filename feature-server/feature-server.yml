@@ -1,7 +1,9 @@
 #
 # For defaults, see: http://dropwizard.codahale.com/manual/core/#configuration-defaults
 #
-url: /home/joe/Documents/onebill_docs/ 
+url: /home/joe/Documents/onebill_docs/
+ 
+repoName : OneBill
 
 authenticationCachePolicy: maximumSize=10000, expireAfterAccess=10m
 

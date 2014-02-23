@@ -4,10 +4,11 @@ package com.onebill.featureservice.persistence;
 
 import gherkin.formatter.JSONFormatter;
 import gherkin.parser.Parser;
-import gherkin.formatter.model.Feature;
 
 import com.google.common.base.Optional;
-import com.onebill.featureservice.representations.FeatureSummary;
+import com.onebill.featureservice.representations.Feature;
+import com.onebill.featureservice.representations.FeatureComponent;
+import com.onebill.featureservice.representations.FeatureGroup;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -29,21 +30,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FeatureRepositoryGit {
+	public final static String ROOT_ID = "root";
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(FeatureRepositoryGit.class);
 	private String uri;
+	private String repoName;
 	private Repository repository;
 	private Ref head;
 	private RevWalk walk;
 
-	public FeatureRepositoryGit() {
-
+	public FeatureRepositoryGit(String uri, String repoName) {
+		this.uri = new String(uri + "/.git");
+		this.repoName = repoName;
 	}
 
-	public Boolean init(String uri) {
+	public Boolean init() {
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
 		try {
-			this.uri = new String(uri + "/.git");
 			repository = builder.setGitDir(new File(this.uri))
 					.readEnvironment() // scan
 					// environment
@@ -63,60 +66,44 @@ public class FeatureRepositoryGit {
 		return true;
 	}
 
-	/*public List<FeatureSummary> getRoot() {
+	protected void setGroupComponents(TreeWalk treeWalk,
+			List<FeatureComponent> featureComponentList) throws IOException {
 		try {
-			RevCommit commit = walk.parseCommit(head.getObjectId());
-			RevTree tree = commit.getTree();
-			// now use a TreeWalk to iterate over all files in the Tree
-			// recursively
-			// you can set Filters to narrow down the results if needed
-			TreeWalk treeWalk = new TreeWalk(repository);
-			treeWalk.addTree(tree);
-			return getGroupContents(treeWalk);
-		} catch (IOException e) {
-			LOGGER.info("Error opening the repository" + this.uri);
-			return null;
-		}
-
-	}
-*/
-	protected List<FeatureSummary> getGroupContents(TreeWalk treeWalk)
-			throws IOException {
-		String result = new String();
-		List<FeatureSummary> featureSummaryList = Collections
-				.synchronizedList(new ArrayList<FeatureSummary>());
-		try {
-			treeWalk.setRecursive(false);
-
 			while (treeWalk.next()) {
 				String objectId = treeWalk.getObjectId(0).toString();
 				String Id = objectId.substring(objectId.indexOf('[') + 1,
 						objectId.indexOf(']'));
 				if (treeWalk.isSubtree()) {
-					featureSummaryList.add(new FeatureSummary(
-							FeatureSummary.FeatureType.GROUP, treeWalk
+					featureComponentList.add(new FeatureGroup(
+							FeatureComponent.FeatureType.GROUP, treeWalk
 									.getNameString(), Id));
 					// treeWalk.enterSubtree();
 				} else {
-					featureSummaryList.add(new FeatureSummary(
-							FeatureSummary.FeatureType.FEATURE, treeWalk
+					featureComponentList.add(new Feature(
+							FeatureComponent.FeatureType.FEATURE, treeWalk
 									.getNameString(), Id));
 				}
 			}
-			LOGGER.info("Requested Group Contains " + featureSummaryList.size() + " objects");
+			LOGGER.info("Requested Group Contains "
+					+ featureComponentList.size() + " objects");
 		} catch (IOException io) {
 			LOGGER.info("Error walking the repository" + io.getMessage());
 			throw io;
 		}
-		return featureSummaryList;
 	}
 
-	public List<FeatureSummary> getGroupContents(Optional<String> id) {
+	public FeatureGroup getGroupContents(Optional<String> id) {
 		try {
+			FeatureGroup featureGroup = new FeatureGroup();
+			featureGroup.setType(FeatureComponent.FeatureType.GROUP);
 			TreeWalk treeWalk = new TreeWalk(repository);
 			if (id.isPresent()) {
 				treeWalk.addTree(ObjectId.fromString(id.get()));
+				featureGroup.setId(id.get());
+				featureGroup.setName(treeWalk.getNameString());
 			} else {
+				featureGroup.setId(ROOT_ID);
+				featureGroup.setName(this.repoName);
 				RevCommit commit = walk.parseCommit(head.getObjectId());
 				RevTree tree = commit.getTree();
 				// now use a TreeWalk to iterate over all files in the Tree
@@ -124,7 +111,8 @@ public class FeatureRepositoryGit {
 				// you can set Filters to narrow down the results if needed
 				treeWalk.addTree(tree);
 			}
-			return getGroupContents(treeWalk);
+			setGroupComponents(treeWalk, featureGroup.getFeatureComponentList());
+			return featureGroup;
 		} catch (IOException io) {
 			LOGGER.info("error retrieving directory contents");
 			return null;

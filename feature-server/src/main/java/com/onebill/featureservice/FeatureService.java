@@ -42,22 +42,21 @@ public class FeatureService extends Service<FeatureServiceConfiguration> {
 	@Override
 	public void run(FeatureServiceConfiguration conf, Environment env)
 			throws ClassNotFoundException {
-		String url = conf.getUrl();
-		LOGGER.info(url);
-		
-		FeatureRepositoryGit repo = new FeatureRepositoryGit();
-		if (!repo.init(url)) {
+
+		FeatureRepositoryGit repo = new FeatureRepositoryGit(conf.getUrl(),
+				conf.getRepoName());
+		if (!repo.init()) {
 			LOGGER.info("Unable to read repositories");
 			return;
 		}
 
 		// String defaultName = conf.getDefaultName();
-		env.addProvider(new BasicAuthProvider<User>(CachingAuthenticator
-				.wrap(new FeatureAuthenticator(),
+		env.addProvider(new BasicAuthProvider<User>(
+				CachingAuthenticator.wrap(new FeatureAuthenticator(),
 						conf.getAuthenticationCachePolicy()),
 				"Protected Service, credentials are required"));
 		env.addResource(new FeaturesResource(repo));
-		env.addHealthCheck(new FeatureServiceHealthCheck(url));
+		env.addHealthCheck(new FeatureServiceHealthCheck(conf.getUrl()));
 	}
 
 }

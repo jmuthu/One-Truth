@@ -4,14 +4,12 @@ import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
 import com.google.common.base.Optional;
 
-
-
 //import com.onebill.featureservice.representations.Feature;
 import gherkin.formatter.model.Feature;
 
 import com.google.common.base.Optional;
 import com.onebill.featureservice.persistence.FeatureRepositoryGit;
-import com.onebill.featureservice.representations.FeatureSummary;
+import com.onebill.featureservice.representations.FeatureGroup;
 import com.onebill.featureservice.representations.User;
 
 import javax.ws.rs.*;
@@ -29,70 +27,64 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FeaturesResource {
-   
-   private FeatureRepositoryGit featureRepo;
-   public FeaturesResource(FeatureRepositoryGit repo) {
-        featureRepo = repo;
-    }
 
-   @GET
-   @Path("/group/root")
-   @Timed
-   public List<FeatureSummary> getRoot() {
-       return featureRepo.getGroupContents(Optional.<String>absent());
-   }
-   
-    @GET
-    @Path("/group/{id}")
-    @Timed
-    public List<FeatureSummary> getGroup(@Auth User user, @PathParam("id") String id) {
-        List<FeatureSummary> ret = featureRepo.getGroupContents(Optional.of(id));
-        if (ret != null) {
-            return ret;
-        } else {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-    }
-    
-    @GET
-    @Path("/feature/{id}")
-    @Timed
-    public String getFeature(@Auth User user, @PathParam("id") String id) {
-        String result = featureRepo.getFeatureContents(id);
-        if (result != null) {
-            return result;
-        } else {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-    }
-    
-/*
-    @POST
-    @Timed
-    public void save(Feature Feature) {
-        if (Feature != null && Feature.isValid()) {
-            if (Feature.getId() != null) {
-                featureRepo.update(Feature);
-            } else {
-                featureRepo.insert(Feature);
-            }
-        }
-    }
+	private FeatureRepositoryGit featureRepo;
 
-    @DELETE
-    @Path("/{id}")
-    @Timed
-    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN})
-    public void deleteFeature(@PathParam("id") Integer id) {
-        /**
-         * Note: AngularJS $resource will send a DELETE request as content-type test/plain for some reason;
-         * so therefore we must add MediaType.TEXT_PLAIN here.
-         *
-        if (FeatureRepo.findById(id) != null) {
-            featureRepo.deleteById(id);
-        } else {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-    }
-    */
+	public FeaturesResource(FeatureRepositoryGit repo) {
+		featureRepo = repo;
+	}
+
+	@GET
+	@Path("/group/root")
+	@Timed
+	public FeatureGroup getRoot() {
+		return featureRepo.getGroupContents(Optional.<String> absent());
+	}
+
+	@GET
+	@Path("/group/{id}")
+	@Timed
+	public FeatureGroup getGroup(@Auth User user, @PathParam("id") String id) {
+		FeatureGroup ret = featureRepo.getGroupContents(Optional.of(id));
+		if (ret != null) {
+			return ret;
+		} else {
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+	}
+
+	@GET
+	@Path("/feature/{id}")
+	@Timed
+	public String getFeature(@Auth User user, @PathParam("id") String id) {
+		String result = featureRepo.getFeatureContents(id);
+		if (result != null) {
+			return result;
+		} else {
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+	}
+
+	/*
+	 * @POST
+	 * 
+	 * @Timed public void save(Feature Feature) { if (Feature != null &&
+	 * Feature.isValid()) { if (Feature.getId() != null) {
+	 * featureRepo.update(Feature); } else { featureRepo.insert(Feature); } } }
+	 * 
+	 * @DELETE
+	 * 
+	 * @Path("/{id}")
+	 * 
+	 * @Timed
+	 * 
+	 * @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
+	 * MediaType.TEXT_PLAIN}) public void deleteFeature(@PathParam("id") Integer
+	 * id) { /** Note: AngularJS $resource will send a DELETE request as
+	 * content-type test/plain for some reason; so therefore we must add
+	 * MediaType.TEXT_PLAIN here.
+	 * 
+	 * if (FeatureRepo.findById(id) != null) { featureRepo.deleteById(id); }
+	 * else { throw new WebApplicationException(Response.Status.NOT_FOUND); } }
+	 */
 }

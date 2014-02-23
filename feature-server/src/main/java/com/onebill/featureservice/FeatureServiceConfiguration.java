@@ -7,21 +7,27 @@ import com.yammer.dropwizard.config.Configuration;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class FeatureServiceConfiguration extends Configuration {
-    @NotEmpty
-    @JsonProperty
-    private String url;
-    
-    @JsonProperty
-    private CacheBuilderSpec authenticationCachePolicy;
+	@NotEmpty
+	@JsonProperty
+	private String url;
 
-    
-   public String getUrl() {
-        return url;
-    }
+	@NotEmpty
+	@JsonProperty
+	private String repoName;
 
-    
-    public CacheBuilderSpec getAuthenticationCachePolicy () {
-    	return authenticationCachePolicy;
-    }
+	@JsonProperty
+	private CacheBuilderSpec authenticationCachePolicy;
+
+	public String getUrl() {
+		return url;
+	}
+
+	public String getRepoName() {
+		return repoName;
+	}
+
+	public CacheBuilderSpec getAuthenticationCachePolicy() {
+		return authenticationCachePolicy;
+	}
 
 }

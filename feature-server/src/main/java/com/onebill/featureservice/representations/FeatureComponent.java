@@ -5,8 +5,11 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-
-public class FeatureSummary {
+/*
+ * This is base abstract class (similar to composite design patter). It represents
+ * a feature or a group of feature.
+ */
+public abstract class FeatureComponent {
 	public enum FeatureType {
 		GROUP, FEATURE;
 
@@ -31,36 +34,36 @@ public class FeatureSummary {
 	@JsonProperty
 	private String id;
 
-	public FeatureSummary() {
+	public FeatureComponent() {
 	}
 
-	public FeatureSummary(FeatureType type, String name, String id) {
+	public FeatureComponent(FeatureType type, String name, String id) {
 		this.type = type;
 		this.name = name;
 		this.id = id;
 	}
 
-	FeatureType getType() {
+	public FeatureType getType() {
 		return type;
 	}
 
-	String getName() {
+	public String getName() {
 		return name;
 	}
 
-	String getId() {
+	public String getId() {
 		return id;
 	}
 
-	void setType(FeatureType type) {
+	public void setType(FeatureType type) {
 		this.type = type;
 	}
 
-	void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
-	void setId(String Id) {
+	public void setId(String Id) {
 		this.id = Id;
 	}
 

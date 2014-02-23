@@ -9,12 +9,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * @author Per Spilling
- */
-public class Feature {
+public class Feature extends FeatureComponent {
 	
+	public Feature() {
+    }
+
+    public Feature(FeatureComponent.FeatureType type, String name, String id) {
+        super(type, name, id);
+    }
+
 	
+	/*
 	@JsonProperty
     private Integer id; // PK
 	@JsonProperty
@@ -29,14 +34,7 @@ public class Feature {
     private List<Feature.Scenario> scenarios = Collections.synchronizedList(new ArrayList<Feature.Scenario>());
     
 
-    public Feature() {
-    }
-
-    public Feature(String title, String desc) {
-        this.title = title;
-        this.desc = desc;
-    }
-
+    
     public Feature(String title, String desc, List<Feature.Scenario> scenarios) {
         this.title = title;
         this.desc = desc;
@@ -105,4 +103,5 @@ public class Feature {
     public boolean isValid() {
         return title != null && desc != null;
     }
+    */
 }
