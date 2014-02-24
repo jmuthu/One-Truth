@@ -11,15 +11,15 @@ var featureWebApp = angular.module('featureWebApp', [ 'ngRoute',
  */
 
 featureWebApp.config([ '$routeProvider', function($routeProvider) {
-	$routeProvider.when('/features/group', {
-		templateUrl : 'partials/feature-list.html',
-		controller : 'FeatureRootDetailCtrl'
-	}).when('/features/group/:groupId', {
+	$routeProvider.when('/features/group/:groupId/:name', {
 		templateUrl : 'partials/feature-list.html',
 		controller : 'FeatureGroupDetailCtrl'
-	}).when('/features/feature/:featureId', {
+	}).when('/features/feature/:featureId/:name', {
 		templateUrl : 'partials/feature-detail.html',
 		controller : 'FeatureDetailCtrl'
+	}).when('/features/group', {
+		templateUrl : 'partials/feature-list.html',
+		controller : 'FeatureRootDetailCtrl'
 	}).otherwise({
 		redirectTo : '/features/group'
 	});

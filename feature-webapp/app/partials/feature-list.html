@@ -1,28 +1,20 @@
 <div class="container-fluid">
-	<div class="row-fluid">
-		<div class="span2">
-			<!--Sidebar content-->
-			Search: <input ng-model="query">
-		</div>
-		<div>
-			<ul class="breadcrumb">
-				<li ng-repeat="breadcrumb in breadcrumbs.getAll()"><span
-					class="divider">/</span> <ng-switch on="$last"> <span
-						ng-switch-when="true">{{breadcrumb.name}}</span> <span
-						ng-switch-default> <a href="{{breadcrumb.path}}">{{breadcrumb.name}}</a>
-					</span> </ng-switch></li>
-			</ul>
-		</div>
-		<div class="span10">
-			<!--Body content-->
-
-			<ul class="features">
-				<li ng-repeat="featureComponent in group.featureComponentList"
-					class="thumbnail"><a
-					href="#/features/{{featureComponent.type}}/{{featureComponent.id}}">{{featureComponent.name}}</a>
-				</li>
-			</ul>
-
-		</div>
+	<div>
+		<ul class="breadcrumb">
+			<li ng-repeat="breadcrumb in breadcrumbs.getAll()"><span
+				class="divider">/</span> <ng-switch on="$last"> <span
+					ng-switch-when="true">{{breadcrumb.name}}</span> <span
+					ng-switch-default> <a href="{{breadcrumb.path}}">{{breadcrumb.name}}</a>
+				</span> </ng-switch></li>
+		</ul>
+	</div>
+	<div class="span10">
+		<!--Body content-->
+		<ul class="features">
+			<li ng-repeat="featureComponent in group.featureComponentList"
+				class="thumbnail"><a
+				href="#/features/{{featureComponent.type}}/{{featureComponent.id}}/{{featureComponent.name}}">{{featureComponent.name}}</a>
+			</li>
+		</ul>
 	</div>
 </div>

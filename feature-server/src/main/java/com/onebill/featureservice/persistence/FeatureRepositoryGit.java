@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Ref;
@@ -25,6 +26,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,9 +100,10 @@ public class FeatureRepositoryGit {
 			featureGroup.setType(FeatureComponent.FeatureType.GROUP);
 			TreeWalk treeWalk = new TreeWalk(repository);
 			if (id.isPresent()) {
-				treeWalk.addTree(ObjectId.fromString(id.get()));
+				AnyObjectId objectId = ObjectId.fromString(id.get()); 
+				treeWalk.addTree(objectId);
 				featureGroup.setId(id.get());
-				featureGroup.setName(treeWalk.getNameString());
+				featureGroup.setName(id.get());
 			} else {
 				featureGroup.setId(ROOT_ID);
 				featureGroup.setName(this.repoName);

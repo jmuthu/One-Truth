@@ -1,16 +1,28 @@
-<h2>Feature : {{feature.name}}</h2>
+<div class="container-fluid">
+	<div>
+		<ul class="breadcrumb">
+			<li ng-repeat="breadcrumb in breadcrumbs.getAll()"><span
+				class="divider">/</span> <ng-switch on="$last"> <span
+					ng-switch-when="true">{{breadcrumb.name}}</span> <span
+					ng-switch-default> <a href="{{breadcrumb.path}}">{{breadcrumb.name}}</a>
+				</span> </ng-switch></li>
+		</ul>
+	</div>
 
-<p>{{feature.description}}</p>
+	<h2>Feature : {{feature.name}}</h2>
 
-<dl ng-repeat="scenario in feature.elements" >
-	<dt>Scenario</dt>
-	<dd >
-	  <p>{{scenario.name}}</p>
-		<dl ng-repeat="step in scenario.steps">
-		<dt>{{step.keyword}}</dt>
-		<dd >{{step.name}}</dd>
-		</dl>
+	<p>{{feature.description}}</p>
 
-	</dd>
+	<dl ng-repeat="scenario in feature.elements">
+		<dt>Scenario</dt>
+		<dd>
+			<p>{{scenario.name}}</p>
+			<dl ng-repeat="step in scenario.steps">
+				<dt>{{step.keyword}}</dt>
+				<dd>{{step.name}}</dd>
+			</dl>
 
-</dl>
+		</dd>
+
+	</dl>
+</div>

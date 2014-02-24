@@ -7,7 +7,7 @@ import java.util.List;
 public class FeatureGroup extends FeatureComponent {
 
 	private List<FeatureComponent> featureComponentList = Collections
-			.synchronizedList(new ArrayList<FeatureComponent>());;
+			.synchronizedList(new ArrayList<FeatureComponent>());
 	
 	public FeatureGroup() {
 	}
