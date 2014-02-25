@@ -3,7 +3,7 @@
 /* App Module */
 
 var featureWebApp = angular.module('featureWebApp', [ 'ngRoute',
-		'featureServices', 'breadcrumbServices', 'featureControllers', ]);
+		'featureServices', 'breadcrumbServices', 'featureControllers' ]);
 
 /*
  * featureWebApp.controller('FeatureCtrl',function($scope){ $scope.features = [
@@ -17,6 +17,9 @@ featureWebApp.config([ '$routeProvider', function($routeProvider) {
 	}).when('/features/feature/:featureId/:name', {
 		templateUrl : 'partials/feature-detail.html',
 		controller : 'FeatureDetailCtrl'
+	}).when('/features/search/:text', {
+		templateUrl : 'partials/feature-search-results.html',
+		controller : 'FeatureSearchResultsCtrl'
 	}).when('/features/group', {
 		templateUrl : 'partials/feature-list.html',
 		controller : 'FeatureRootDetailCtrl'

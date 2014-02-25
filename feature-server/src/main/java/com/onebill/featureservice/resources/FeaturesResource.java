@@ -4,12 +4,11 @@ import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
 import com.google.common.base.Optional;
 
-//import com.onebill.featureservice.representations.Feature;
-import gherkin.formatter.model.Feature;
+import com.onebill.featureservice.representations.Feature;
 
-import com.google.common.base.Optional;
 import com.onebill.featureservice.persistence.FeatureRepositoryGit;
 import com.onebill.featureservice.representations.FeatureGroup;
+import com.onebill.featureservice.representations.FeatureSearchResult;
 import com.onebill.featureservice.representations.User;
 
 import javax.ws.rs.*;
@@ -56,8 +55,8 @@ public class FeaturesResource {
 	@GET
 	@Path("/feature/{id}")
 	@Timed
-	public String getFeature(@Auth User user, @PathParam("id") String id) {
-		String result = featureRepo.getFeatureContents(id);
+	public Feature getFeature(@Auth User user, @PathParam("id") String id) {
+		Feature result = featureRepo.getFeatureContents(id);
 		if (result != null) {
 			return result;
 		} else {
@@ -65,6 +64,18 @@ public class FeaturesResource {
 		}
 	}
 
+	@GET
+	@Path("/feature")
+	@Timed
+	public List<FeatureSearchResult> query(@Auth User user,
+			@QueryParam("text") String queryText) {
+		List<FeatureSearchResult> result = featureRepo.query(queryText);
+		if (result != null) {
+			return result;
+		} else {
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+	}
 	/*
 	 * @POST
 	 * 

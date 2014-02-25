@@ -38,14 +38,33 @@ featureControllers.controller('FeatureDetailCtrl', [
 		'FeatureService',
 		'Breadcrumbs',
 		function($scope, $routeParams, FeatureService, Breadcrumbs) {
-			var features = FeatureService.query({
+			var feature = FeatureService.query({
 				featureId : $routeParams.featureId,
-			}, function(features) {
-				var pathString = "#features/feature/" + features[0].id
-						+ "/" + $routeParams.name;
+			}, function(feature) {
+				var pathString = "#features/feature/" + feature.id + "/"
+						+ $routeParams.name;
 				Breadcrumbs.add($routeParams.name, pathString);
 				$scope.breadcrumbs = Breadcrumbs;
-				$scope.feature = features[0];
+				$scope.feature = feature;
 			});
+
+		} ]);
+
+featureControllers.controller('FeatureSearchResultsCtrl', [ '$scope',
+		'$routeParams', 'FeatureSearchService',
+		function($scope, $routeParams, FeatureSearchService) {
+			var searchResults = FeatureSearchService.search({
+				text : $routeParams.text,
+			}, function(searchResults) {
+				$scope.searchResults = searchResults;
+			});
+
+		} ]);
+
+featureControllers.controller('searchCtrl', [ '$scope', '$location',
+		function($scope, $location) {
+			$scope.submit = function() {
+				$location.path("/features/search/" + $scope.text);
+			}
 
 		} ]);

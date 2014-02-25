@@ -9,11 +9,11 @@
 		</ul>
 	</div>
 
-	<h2>Feature : {{feature.name}}</h2>
+	<h2>Feature : {{feature.contentsInJson[0].name}}</h2>
 
-	<p>{{feature.description}}</p>
+	<p>{{feature.contentsInJson[0].description}}</p>
 
-	<dl ng-repeat="scenario in feature.elements">
+	<dl ng-repeat="scenario in feature.contentsInJson[0].elements">
 		<dt>Scenario</dt>
 		<dd>
 			<p>{{scenario.name}}</p>

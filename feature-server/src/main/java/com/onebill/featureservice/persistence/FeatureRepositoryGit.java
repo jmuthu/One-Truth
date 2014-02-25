@@ -1,7 +1,5 @@
 package com.onebill.featureservice.persistence;
 
-//import com.onebill.featureservice.representations.Feature;
-
 import gherkin.formatter.JSONFormatter;
 import gherkin.parser.Parser;
 
@@ -9,13 +7,13 @@ import com.google.common.base.Optional;
 import com.onebill.featureservice.representations.Feature;
 import com.onebill.featureservice.representations.FeatureComponent;
 import com.onebill.featureservice.representations.FeatureGroup;
+import com.onebill.featureservice.representations.FeatureSearchResult;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.ObjectId;
@@ -69,21 +67,22 @@ public class FeatureRepositoryGit {
 	}
 
 	protected void setGroupComponents(TreeWalk treeWalk,
-			List<FeatureComponent> featureComponentList) throws IOException {
+			List<FeatureComponent> featureComponentList, int treeIndex)
+			throws IOException {
 		try {
 			while (treeWalk.next()) {
-				String objectId = treeWalk.getObjectId(0).toString();
-				String Id = objectId.substring(objectId.indexOf('[') + 1,
-						objectId.indexOf(']'));
+				String Id = treeWalk.getObjectId(0).getName();
+				// String Id = objectId.substring(objectId.indexOf('[') + 1,
+				// objectId.indexOf(']'));
+				AbstractTreeIterator it = treeWalk.getTree(treeIndex,
+						AbstractTreeIterator.class);
 				if (treeWalk.isSubtree()) {
-					featureComponentList.add(new FeatureGroup(
-							FeatureComponent.FeatureType.GROUP, treeWalk
-									.getNameString(), Id));
+					featureComponentList.add(new FeatureGroup(treeWalk
+							.getNameString(), Id));
 					// treeWalk.enterSubtree();
 				} else {
-					featureComponentList.add(new Feature(
-							FeatureComponent.FeatureType.FEATURE, treeWalk
-									.getNameString(), Id));
+					featureComponentList.add(new Feature(treeWalk
+							.getNameString(), Id));
 				}
 			}
 			LOGGER.info("Requested Group Contains "
@@ -99,11 +98,14 @@ public class FeatureRepositoryGit {
 			FeatureGroup featureGroup = new FeatureGroup();
 			featureGroup.setType(FeatureComponent.FeatureType.GROUP);
 			TreeWalk treeWalk = new TreeWalk(repository);
+			int treeIndex = 0;
 			if (id.isPresent()) {
-				AnyObjectId objectId = ObjectId.fromString(id.get()); 
-				treeWalk.addTree(objectId);
+				AnyObjectId objectId = ObjectId.fromString(id.get());
+				treeIndex = treeWalk.addTree(objectId);
+				AbstractTreeIterator it = treeWalk.getTree(treeIndex,
+						AbstractTreeIterator.class);
 				featureGroup.setId(id.get());
-				featureGroup.setName(id.get());
+				featureGroup.setName(it.getEntryPathString());
 			} else {
 				featureGroup.setId(ROOT_ID);
 				featureGroup.setName(this.repoName);
@@ -112,9 +114,10 @@ public class FeatureRepositoryGit {
 				// now use a TreeWalk to iterate over all files in the Tree
 				// recursively
 				// you can set Filters to narrow down the results if needed
-				treeWalk.addTree(tree);
+				treeIndex = treeWalk.addTree(tree);
 			}
-			setGroupComponents(treeWalk, featureGroup.getFeatureComponentList());
+			setGroupComponents(treeWalk,
+					featureGroup.getFeatureComponentList(), treeIndex);
 			return featureGroup;
 		} catch (IOException io) {
 			LOGGER.info("error retrieving directory contents");
@@ -122,14 +125,14 @@ public class FeatureRepositoryGit {
 		}
 	}
 
-	public String getFeatureContents(String id) {
+	public Feature getFeatureContents(String id) {
 		try {
 			// String path =
 			// "/home/joe/Documents/onebill_docs/Dashboard/BusinessDashboard.feature";
 			// String gherkin = FixJava.readReader(new InputStreamReader(
 			// new FileInputStream(path), "UTF-8"));
-
-			ObjectLoader loader = repository.open(ObjectId.fromString(id));
+			ObjectId objectId = ObjectId.fromString(id);
+			ObjectLoader loader = repository.open(objectId);
 			StringBuilder json = new StringBuilder();
 
 			JSONFormatter formatter = new JSONFormatter(json);
@@ -144,14 +147,24 @@ public class FeatureRepositoryGit {
 			// LOGGER.info("json: '" + json + "'"); // Gherkin source as
 			// Gson gson = new Gson();
 			// Feature feature = gson.fromJson(json.toString(), Feature.class);
-			return json.toString();
+			Feature feature = new Feature(objectId.getName(),
+					objectId.getName(), json.toString());
+			return feature;
 		} catch (IOException io) {
 			LOGGER.info("error" + io.getMessage());
 		}
 		return null;
 	}
 
-	public List<Feature> search(String query) {
+	public List<FeatureSearchResult> query(String query) {
+		try {
+			GrepGit grep = new GrepGit(repository, Pattern.compile(query),
+					walk.parseCommit(head.getObjectId()));
+			return grep.getResults();
+		} catch (IOException io) {
+			LOGGER.info("error" + io.getMessage());
+		}
 		return null;
+
 	}
 }

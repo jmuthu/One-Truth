@@ -13,8 +13,11 @@
 </head>
 <body>
 	<div>
-		<div >
-			Search: <input ng-model="query">
+		<div  >
+		    <form novalidate ng-submit="submit()" ng-controller="searchCtrl" >
+			<input type="text" ng-model="text" name="search">
+			<input type="submit" id="submit" value="Search" />
+			</form>
 		</div>
 		<div ng-view></div>
 </body>

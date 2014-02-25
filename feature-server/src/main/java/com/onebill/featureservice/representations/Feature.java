@@ -1,6 +1,8 @@
 package com.onebill.featureservice.representations;
 
-import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/*import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -8,17 +10,32 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+*/
 
 public class Feature extends FeatureComponent {
+	
+	@JsonProperty
+	private String contentsInJson;
 	
 	public Feature() {
     }
 
-    public Feature(FeatureComponent.FeatureType type, String name, String id) {
-        super(type, name, id);
+    public Feature(String name, String id) {
+        super(FeatureComponent.FeatureType.FEATURE, name, id);
+    }
+    
+    public Feature(String name, String id, String contentsInJson) {
+        super(FeatureComponent.FeatureType.FEATURE, name, id);
+        this.contentsInJson = contentsInJson;
     }
 
+	public void contentsInJson(String contentsInJson) {
+		this.contentsInJson = contentsInJson;
+	}
 	
+	public String getcontentsInJson() {
+		return this.contentsInJson;
+	}
 	/*
 	@JsonProperty
     private Integer id; // PK
