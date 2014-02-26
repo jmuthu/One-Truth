@@ -55,8 +55,8 @@ public class FeaturesResource {
 	@GET
 	@Path("/feature/{id}")
 	@Timed
-	public Feature getFeature(@Auth User user, @PathParam("id") String id) {
-		Feature result = featureRepo.getFeatureContents(id);
+	public String getFeature(@Auth User user, @PathParam("id") String id) {
+		String result = featureRepo.getFeatureContents(id);
 		if (result != null) {
 			return result;
 		} else {

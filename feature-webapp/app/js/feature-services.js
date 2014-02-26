@@ -23,7 +23,7 @@ featureServices.factory('FeatureService', [ '$resource', function($resource) {
 			params : {
 				featureId : '@id'
 			},
-			isArray : false
+			isArray : true
 		}
 	});
 } ]);

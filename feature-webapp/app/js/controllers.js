@@ -38,14 +38,14 @@ featureControllers.controller('FeatureDetailCtrl', [
 		'FeatureService',
 		'Breadcrumbs',
 		function($scope, $routeParams, FeatureService, Breadcrumbs) {
-			var feature = FeatureService.query({
+			var features = FeatureService.query({
 				featureId : $routeParams.featureId,
-			}, function(feature) {
-				var pathString = "#features/feature/" + feature.id + "/"
+			}, function(features) {
+				var pathString = "#features/feature/" + features[0].id + "/"
 						+ $routeParams.name;
 				Breadcrumbs.add($routeParams.name, pathString);
 				$scope.breadcrumbs = Breadcrumbs;
-				$scope.feature = feature;
+				$scope.features = features;
 			});
 
 		} ]);

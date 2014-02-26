@@ -14,8 +14,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public class Feature extends FeatureComponent {
 	
-	@JsonProperty
-	private String contentsInJson;
 	
 	public Feature() {
     }
@@ -26,9 +24,9 @@ public class Feature extends FeatureComponent {
     
     public Feature(String name, String id, String contentsInJson) {
         super(FeatureComponent.FeatureType.FEATURE, name, id);
-        this.contentsInJson = contentsInJson;
+       // this.contentsInJson = contentsInJson;
     }
-
+    /*
 	public void contentsInJson(String contentsInJson) {
 		this.contentsInJson = contentsInJson;
 	}
@@ -36,7 +34,7 @@ public class Feature extends FeatureComponent {
 	public String getcontentsInJson() {
 		return this.contentsInJson;
 	}
-	/*
+	
 	@JsonProperty
     private Integer id; // PK
 	@JsonProperty

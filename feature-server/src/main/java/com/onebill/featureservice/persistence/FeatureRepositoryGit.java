@@ -125,7 +125,7 @@ public class FeatureRepositoryGit {
 		}
 	}
 
-	public Feature getFeatureContents(String id) {
+	public String getFeatureContents(String id) {
 		try {
 			// String path =
 			// "/home/joe/Documents/onebill_docs/Dashboard/BusinessDashboard.feature";
@@ -147,9 +147,10 @@ public class FeatureRepositoryGit {
 			// LOGGER.info("json: '" + json + "'"); // Gherkin source as
 			// Gson gson = new Gson();
 			// Feature feature = gson.fromJson(json.toString(), Feature.class);
-			Feature feature = new Feature(objectId.getName(),
-					objectId.getName(), json.toString());
-			return feature;
+			// LOGGER.info(json.toString());
+			// Feature feature = new Feature(objectId.getName(),
+			// objectId.getName(), json.toString());
+			return json.toString();
 		} catch (IOException io) {
 			LOGGER.info("error" + io.getMessage());
 		}
