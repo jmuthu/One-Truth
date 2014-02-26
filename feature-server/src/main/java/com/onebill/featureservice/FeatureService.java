@@ -1,23 +1,17 @@
 package com.onebill.featureservice;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.onebill.featureservice.auth.FeatureAuthenticator;
+import com.onebill.featureservice.persistence.FeatureRepositoryGit;
+import com.onebill.featureservice.representations.User;
+import com.onebill.featureservice.resources.FeaturesResource;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.auth.CachingAuthenticator;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
-import com.onebill.featureservice.persistence.FeatureRepositoryGit;
-import com.onebill.featureservice.representations.User;
-import com.onebill.featureservice.resources.FeaturesResource;
-import com.onebill.featureservice.FeatureServiceConfiguration;
-import com.onebill.featureservice.auth.FeatureAuthenticator;
-import com.onebill.featureservice.health.FeatureServiceHealthCheck;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This main-class will be used by the start_server.sh script to start the
@@ -56,7 +50,7 @@ public class FeatureService extends Service<FeatureServiceConfiguration> {
 						conf.getAuthenticationCachePolicy()),
 				"Protected Service, credentials are required"));
 		env.addResource(new FeaturesResource(repo));
-		env.addHealthCheck(new FeatureServiceHealthCheck(conf.getUrl()));
+//		env.addHealthCheck(new FeatureServiceHealthCheck(conf.getUrl()));
 	}
 
 }

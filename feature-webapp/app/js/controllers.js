@@ -2,58 +2,34 @@
 
 /* Controllers */
 
-var featureControllers = angular.module('featureControllers', [
+var oneTruthController = angular.module('oneTruthController', [
 		'featureServices', 'breadcrumbServices' ]);
 
-featureControllers.controller('FeatureRootDetailCtrl', [ '$scope',
-		'GroupService', 'Breadcrumbs',
-		function($scope, GroupService, Breadcrumbs) {
-			$scope.group = GroupService.query({}, function(group) {
-				Breadcrumbs.add(group.name, "#features/group/root");
-				$scope.breadcrumbs = Breadcrumbs;
-			})
-
-		} ]);
-
-featureControllers.controller('FeatureGroupDetailCtrl', [
-		'$scope',
-		'$routeParams',
-		'GroupService',
-		'Breadcrumbs',
+oneTruthController.controller('GroupDetailCtrl', [ '$scope',
+		'$routeParams', 'GroupService', 'Breadcrumbs',
 		function($scope, $routeParams, GroupService, Breadcrumbs) {
 			$scope.group = GroupService.get({
-				groupId : $routeParams.groupId,
+				path : $routeParams.path,
 			}, function(group) {
-				var pathString = "#features/group/" + group.id + "/"
-						+ $routeParams.name;
-				Breadcrumbs.add($routeParams.name, pathString);
-				$scope.breadcrumbs = Breadcrumbs;
 			});
 
 		} ]);
 
-featureControllers.controller('FeatureDetailCtrl', [
-		'$scope',
-		'$routeParams',
-		'FeatureService',
-		'Breadcrumbs',
+oneTruthController.controller('FeatureDetailCtrl', [ '$scope', '$routeParams',
+		'FeatureService', 'Breadcrumbs',
 		function($scope, $routeParams, FeatureService, Breadcrumbs) {
 			var features = FeatureService.query({
-				featureId : $routeParams.featureId,
+				path : $routeParams.path,
 			}, function(features) {
-				var pathString = "#features/feature/" + features[0].id + "/"
-						+ $routeParams.name;
-				Breadcrumbs.add($routeParams.name, pathString);
-				$scope.breadcrumbs = Breadcrumbs;
 				$scope.features = features;
 			});
 
 		} ]);
 
-featureControllers.controller('FeatureSearchResultsCtrl', [ '$scope',
-		'$routeParams', 'FeatureSearchService',
-		function($scope, $routeParams, FeatureSearchService) {
-			var searchResults = FeatureSearchService.search({
+oneTruthController.controller('SearchResultsCtrl', [ '$scope',
+		'$routeParams', 'SearchService',
+		function($scope, $routeParams, SearchService) {
+			var searchResults = SearchService.search({
 				text : $routeParams.text,
 			}, function(searchResults) {
 				$scope.searchResults = searchResults;
@@ -61,10 +37,10 @@ featureControllers.controller('FeatureSearchResultsCtrl', [ '$scope',
 
 		} ]);
 
-featureControllers.controller('searchCtrl', [ '$scope', '$location',
+oneTruthController.controller('SearchClickCtrl', [ '$scope', '$location',
 		function($scope, $location) {
 			$scope.submit = function() {
-				$location.path("/features/search/" + $scope.text);
+				$location.path("/search/" + $scope.text);
 			}
 
 		} ]);

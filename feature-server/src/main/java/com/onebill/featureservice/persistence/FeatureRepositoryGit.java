@@ -66,6 +66,146 @@ public class FeatureRepositoryGit {
 		return true;
 	}
 
+	protected TreeWalk getHeadTree() throws IOException {
+		try {
+			TreeWalk treeWalk = new TreeWalk(repository);
+			RevCommit commit = walk.parseCommit(head.getObjectId());
+			RevTree tree = commit.getTree();
+			treeWalk.addTree(tree);
+			return treeWalk;
+		} catch (IOException ex) {
+			throw ex;
+		}
+	}
+
+	protected void walkTreeToPath(TreeWalk treeWalk, String path) throws IOException {
+		try {
+			String[] components = path.split("/");
+			// Walk the tree till you find the object in the path
+			for (int i = 0; i < components.length && treeWalk.next();) {
+				// LOGGER.info(treeWalk.getNameString() + "==" + components[i]);
+				if (treeWalk.getNameString().equals(components[i])) {
+					// Only Enter subtree if the object is a tree and
+					// if it is not the final part of the path
+					if (treeWalk.isSubtree() && components.length - 1 != i) {
+						treeWalk.enterSubtree();
+					}
+					i++;
+				}
+
+			}
+		} catch (IOException ex) {
+			throw ex;
+		}
+	}
+
+	public String getActualPath(String path) {
+		String[] pathElements = path.split("/", 2); 
+		// parse out root directory
+		String actualPath = null;
+		if (pathElements.length == 2) {
+			actualPath = pathElements[1];
+			LOGGER.info("Actual Path :" + actualPath);
+		}
+		return actualPath;
+	}
+
+	public FeatureGroup getGroupContentsFromPath(String path) {
+		try {
+			TreeWalk treeWalk = getHeadTree();
+			FeatureGroup featureGroup = new FeatureGroup();
+			featureGroup.setType(FeatureComponent.FeatureType.GROUP);
+			featureGroup.setName(this.repoName);
+
+			String actualPath = getActualPath(path);
+			if (actualPath != null) {
+				walkTreeToPath(treeWalk, actualPath);
+				featureGroup.setName(treeWalk.getNameString());
+				featureGroup.setId(treeWalk.getObjectId(0).getName());
+				treeWalk.enterSubtree();
+			}
+
+			// Get the contents of the requested group
+			
+			while (treeWalk.next()) {
+				if (actualPath != null
+						&& treeWalk.isPathPrefix(actualPath.getBytes(),
+								actualPath.length() - 1) > 0) {
+					// Break out parsing after the requested group's content is
+					// traversed
+					break;
+				}
+				String name = treeWalk.getNameString();
+				String id = treeWalk.getObjectId(0).getName();
+				String childPath = path + "/" + name;
+				if (treeWalk.isSubtree()) {
+					featureGroup.getFeatureComponentList().add(
+							new FeatureGroup(name, id, childPath));
+				} else {
+					featureGroup.getFeatureComponentList().add(
+							new Feature(name, id, childPath));
+				}
+			}
+			return featureGroup;
+		} catch (IOException io) {
+			LOGGER.info("error retrieving directory contents");
+			return null;
+		}
+	}
+
+	public String getFeatureContentsFromPath(String path) {
+		try {
+			TreeWalk treeWalk = getHeadTree();
+			String actualPath = getActualPath(path);
+			if (actualPath != null) {
+				walkTreeToPath(treeWalk, actualPath);
+			}
+			return getFeatureContents(treeWalk.getObjectId(0).getName());
+		} catch (IOException io) {
+			LOGGER.info("error" + io.getMessage());
+		}
+		return null;
+	}
+	
+	public String getFeatureContents(String id) {
+		try {
+			ObjectId objectId = ObjectId.fromString(id);
+			ObjectLoader loader = repository.open(objectId);
+			StringBuilder json = new StringBuilder();
+
+			JSONFormatter formatter = new JSONFormatter(json);
+			Parser parser = new Parser(formatter);
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			loader.copyTo(os);
+			String aString = new String(os.toByteArray(), "UTF-8");
+			// LOGGER.info("file : " + aString);
+			parser.parse(aString, uri, 0);
+			formatter.done();
+			formatter.close();
+			// LOGGER.info("json: '" + json + "'"); // Gherkin source as
+			// Gson gson = new Gson();
+			// Feature feature = gson.fromJson(json.toString(), Feature.class);
+			// LOGGER.info(json.toString());
+			// Feature feature = new Feature(objectId.getName(),
+			// objectId.getName(), json.toString());
+			return json.toString();
+		} catch (IOException io) {
+			LOGGER.info("error" + io.getMessage());
+		}
+		return null;
+	}
+
+	public List<FeatureSearchResult> query(String query) {
+		try {
+			GrepGit grep = new GrepGit(repository, Pattern.compile(query),
+					walk.parseCommit(head.getObjectId()));
+			return grep.getResults();
+		} catch (IOException io) {
+			LOGGER.info("error" + io.getMessage());
+		}
+		return null;
+	}
+
 	protected void setGroupComponents(TreeWalk treeWalk,
 			List<FeatureComponent> featureComponentList, int treeIndex)
 			throws IOException {
@@ -78,11 +218,11 @@ public class FeatureRepositoryGit {
 						AbstractTreeIterator.class);
 				if (treeWalk.isSubtree()) {
 					featureComponentList.add(new FeatureGroup(treeWalk
-							.getNameString(), Id));
+							.getNameString(), Id, ""));
 					// treeWalk.enterSubtree();
 				} else {
 					featureComponentList.add(new Feature(treeWalk
-							.getNameString(), Id));
+							.getNameString(), Id, ""));
 				}
 			}
 			LOGGER.info("Requested Group Contains "
@@ -123,49 +263,5 @@ public class FeatureRepositoryGit {
 			LOGGER.info("error retrieving directory contents");
 			return null;
 		}
-	}
-
-	public String getFeatureContents(String id) {
-		try {
-			// String path =
-			// "/home/joe/Documents/onebill_docs/Dashboard/BusinessDashboard.feature";
-			// String gherkin = FixJava.readReader(new InputStreamReader(
-			// new FileInputStream(path), "UTF-8"));
-			ObjectId objectId = ObjectId.fromString(id);
-			ObjectLoader loader = repository.open(objectId);
-			StringBuilder json = new StringBuilder();
-
-			JSONFormatter formatter = new JSONFormatter(json);
-			Parser parser = new Parser(formatter);
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			loader.copyTo(os);
-			String aString = new String(os.toByteArray(), "UTF-8");
-			// LOGGER.info("file : " + aString);
-			parser.parse(aString, uri, 0);
-			formatter.done();
-			formatter.close();
-			// LOGGER.info("json: '" + json + "'"); // Gherkin source as
-			// Gson gson = new Gson();
-			// Feature feature = gson.fromJson(json.toString(), Feature.class);
-			// LOGGER.info(json.toString());
-			// Feature feature = new Feature(objectId.getName(),
-			// objectId.getName(), json.toString());
-			return json.toString();
-		} catch (IOException io) {
-			LOGGER.info("error" + io.getMessage());
-		}
-		return null;
-	}
-
-	public List<FeatureSearchResult> query(String query) {
-		try {
-			GrepGit grep = new GrepGit(repository, Pattern.compile(query),
-					walk.parseCommit(head.getObjectId()));
-			return grep.getResults();
-		} catch (IOException io) {
-			LOGGER.info("error" + io.getMessage());
-		}
-		return null;
-
 	}
 }

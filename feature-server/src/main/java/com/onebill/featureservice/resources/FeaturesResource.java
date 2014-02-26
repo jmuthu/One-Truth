@@ -22,7 +22,7 @@ import java.util.List;
  * 
  * @author Per Spilling
  */
-@Path("/features")
+@Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FeaturesResource {
@@ -33,6 +33,18 @@ public class FeaturesResource {
 		featureRepo = repo;
 	}
 
+	@GET
+	@Path("/group")
+	@Timed
+	public FeatureGroup getGroupFromPath(@Auth User user, @QueryParam("path") String path) {
+		FeatureGroup ret = featureRepo.getGroupContentsFromPath(path);
+		if (ret != null) {
+			return ret;
+		} else {
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+	}
+	
 	@GET
 	@Path("/group/root")
 	@Timed
@@ -53,6 +65,18 @@ public class FeaturesResource {
 	}
 
 	@GET
+	@Path("/feature")
+	@Timed
+	public String getFeatureFromPath(@Auth User user, @QueryParam("path") String path) {
+		String result = featureRepo.getFeatureContentsFromPath(path);
+		if (result != null) {
+			return result;
+		} else {
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+	}
+	
+	@GET
 	@Path("/feature/{id}")
 	@Timed
 	public String getFeature(@Auth User user, @PathParam("id") String id) {
@@ -65,7 +89,7 @@ public class FeaturesResource {
 	}
 
 	@GET
-	@Path("/feature")
+	@Path("/search")
 	@Timed
 	public List<FeatureSearchResult> query(@Auth User user,
 			@QueryParam("text") String queryText) {

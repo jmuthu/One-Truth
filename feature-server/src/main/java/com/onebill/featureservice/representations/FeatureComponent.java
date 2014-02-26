@@ -34,13 +34,17 @@ public abstract class FeatureComponent {
 	@JsonProperty
 	private String id;
 
+	@JsonProperty
+	private String path;
+	
 	public FeatureComponent() {
 	}
 
-	public FeatureComponent(FeatureType type, String name, String id) {
+	public FeatureComponent(FeatureType type, String name, String id, String path) {
 		this.type = type;
 		this.name = name;
 		this.id = id;
+		this.path = path;
 	}
 
 	public FeatureType getType() {
@@ -55,6 +59,10 @@ public abstract class FeatureComponent {
 		return id;
 	}
 
+	public String getPath() {
+		return this.path;
+	}
+	
 	public void setType(FeatureType type) {
 		this.type = type;
 	}
@@ -66,5 +74,9 @@ public abstract class FeatureComponent {
 	public void setId(String Id) {
 		this.id = Id;
 	}
-
+	
+	public void setPath(String path) {
+		this.path = path;
+	}
+	
 }

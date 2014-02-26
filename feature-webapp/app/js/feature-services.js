@@ -5,19 +5,19 @@
 var featureServices = angular.module('featureServices', [ 'ngResource' ]);
 
 featureServices.factory('GroupService', [ '$resource', function($resource) {
-	return $resource('api/features/group/:groupId', {}, {
+	return $resource('api/group?path=:path', {}, {
 		query : {
 			method : 'GET',
 			params : {
-				groupId : 'root'
+				path : '@path'
 			},
-			isArray : false
+			isArray : true
 		}
 	});
 } ]);
 
 featureServices.factory('FeatureService', [ '$resource', function($resource) {
-	return $resource('api/features/feature/:featureId', {}, {
+	return $resource('api/feature/:featureId', {}, {
 		query : {
 			method : 'GET',
 			params : {
@@ -28,22 +28,15 @@ featureServices.factory('FeatureService', [ '$resource', function($resource) {
 	});
 } ]);
 
-featureServices.factory('FeatureSearchService', [ '$resource', function($resource) {
-	return $resource('api/features/feature?text=:text', {}, {
-		search : {
-			method : 'GET',
-			params : {
-				text : '@text'
-			},
-			isArray : true
-		}
-	});
-} ]);
-
-
-
-/*
-featureServices.factory('Feature', [ '$resource', function($resource) {
-	return $resource('api/features', {}, {});
-} ]);
-*/
+featureServices.factory('SearchService', [ '$resource',
+		function($resource) {
+			return $resource('api/search?text=:text', {}, {
+				search : {
+					method : 'GET',
+					params : {
+						text : '@text'
+					},
+					isArray : true
+				}
+			});
+		} ]);

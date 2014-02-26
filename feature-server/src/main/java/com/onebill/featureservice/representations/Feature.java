@@ -18,14 +18,10 @@ public class Feature extends FeatureComponent {
 	public Feature() {
     }
 
-    public Feature(String name, String id) {
-        super(FeatureComponent.FeatureType.FEATURE, name, id);
+    public Feature(String name, String id, String path) {
+        super(FeatureComponent.FeatureType.FEATURE, name, id, path);
     }
     
-    public Feature(String name, String id, String contentsInJson) {
-        super(FeatureComponent.FeatureType.FEATURE, name, id);
-       // this.contentsInJson = contentsInJson;
-    }
     /*
 	public void contentsInJson(String contentsInJson) {
 		this.contentsInJson = contentsInJson;

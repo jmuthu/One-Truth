@@ -1,7 +1,7 @@
 #
 # For defaults, see: http://dropwizard.codahale.com/manual/core/#configuration-defaults
 #
-url: /home/joe/Documents/onebill_docs/
+url:  /home/joe/Documents/repo_docs/onebill-docs
  
 repoName : OneBill
 

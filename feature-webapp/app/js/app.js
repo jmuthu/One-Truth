@@ -3,33 +3,20 @@
 /* App Module */
 
 var featureWebApp = angular.module('featureWebApp', [ 'ngRoute',
-		'featureServices', 'breadcrumbServices', 'featureControllers' ]);
-
-/*
- * featureWebApp.controller('FeatureCtrl',function($scope){ $scope.features = [
- * {'name':'Product.feature','id':'1234'} ]; });
- */
+		'featureServices', 'breadcrumbServices', 'oneTruthController' ]);
 
 featureWebApp.config([ '$routeProvider', function($routeProvider) {
-	$routeProvider.when('/features/group/:groupId/:name', {
+	$routeProvider.when('/group/:path*', {
 		templateUrl : 'partials/feature-list.html',
-		controller : 'FeatureGroupDetailCtrl'
-	}).when('/features/feature/:featureId/:name', {
+		controller : 'GroupDetailCtrl'
+	}).when('/feature/:path*', {
 		templateUrl : 'partials/feature-detail.html',
 		controller : 'FeatureDetailCtrl'
-	}).when('/features/search/:text', {
+	}).when('/search/:text', {
 		templateUrl : 'partials/feature-search-results.html',
-		controller : 'FeatureSearchResultsCtrl'
-	}).when('/features/group', {
-		templateUrl : 'partials/feature-list.html',
-		controller : 'FeatureRootDetailCtrl'
+		controller : 'SearchResultsCtrl'
 	}).otherwise({
-		redirectTo : '/features/group'
+		redirectTo : '/group/root'
 	});
 } ]);
 
-/*
- * 
- * when('/features/feature?searchText=:text', { templateUrl:
- * 'partials/feature-detail.html', controller: 'FeatureSearchResultsCtrl' }).
- */

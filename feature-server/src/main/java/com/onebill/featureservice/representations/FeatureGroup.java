@@ -15,8 +15,8 @@ public class FeatureGroup extends FeatureComponent {
 	public FeatureGroup() {
 	}
 
-	public FeatureGroup(String name, String id) {
-		super(FeatureComponent.FeatureType.GROUP, name, id);
+	public FeatureGroup(String name, String id, String path ) {
+		super(FeatureComponent.FeatureType.GROUP, name, id, path);
 	}
 
 	public List<FeatureComponent> getFeatureComponentList() {
