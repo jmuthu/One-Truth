@@ -22,6 +22,7 @@ public class FeatureService extends Service<FeatureServiceConfiguration> {
     
     public static void main(String[] args) throws Exception {
         new FeatureService().run(args);
+        
     }
 
     @Override
@@ -30,11 +31,12 @@ public class FeatureService extends Service<FeatureServiceConfiguration> {
     }
 
     @Override
-    public void run(FeatureServiceConfiguration conf, Environment env) throws ClassNotFoundException {
+    public void run(FeatureServiceConfiguration conf, Environment env)    throws ClassNotFoundException {
     	String url= conf.getUrl();
-    	System.out.println(url);
+    	System.out.println(url + url + url);
+    	String myself = "subhash";
     	FeatureRepositoryGit repo = new FeatureRepositoryGit();
-    	repo.init(url);
+    	repo.init(url + myself);
     	
       //  String defaultName = conf.getDefaultName();
 
