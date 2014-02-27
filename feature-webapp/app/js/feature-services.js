@@ -5,27 +5,11 @@
 var featureServices = angular.module('featureServices', [ 'ngResource' ]);
 
 featureServices.factory('GroupService', [ '$resource', function($resource) {
-	return $resource('api/group?path=:path', {}, {
-		query : {
-			method : 'GET',
-			params : {
-				path : '@path'
-			},
-			isArray : true
-		}
-	});
+	return $resource('api/group', {}, {	});
 } ]);
 
 featureServices.factory('FeatureService', [ '$resource', function($resource) {
-	return $resource('api/feature/:featureId', {}, {
-		query : {
-			method : 'GET',
-			params : {
-				featureId : '@id'
-			},
-			isArray : true
-		}
-	});
+	return $resource('api/feature', {}, {});
 } ]);
 
 featureServices.factory('SearchService', [ '$resource',

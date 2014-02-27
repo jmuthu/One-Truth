@@ -2,10 +2,10 @@
 
 /* App Module */
 
-var featureWebApp = angular.module('featureWebApp', [ 'ngRoute',
+var oneTruthWebApp = angular.module('oneTruthWebApp', [ 'ngRoute',
 		'featureServices', 'breadcrumbServices', 'oneTruthController' ]);
 
-featureWebApp.config([ '$routeProvider', function($routeProvider) {
+oneTruthWebApp.config([ '$routeProvider', function($routeProvider) {
 	$routeProvider.when('/group/:path*', {
 		templateUrl : 'partials/feature-list.html',
 		controller : 'GroupDetailCtrl'
@@ -16,7 +16,7 @@ featureWebApp.config([ '$routeProvider', function($routeProvider) {
 		templateUrl : 'partials/feature-search-results.html',
 		controller : 'SearchResultsCtrl'
 	}).otherwise({
-		redirectTo : '/group/root'
+		redirectTo : '/group/OneBill'
 	});
 } ]);
 

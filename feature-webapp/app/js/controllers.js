@@ -5,35 +5,31 @@
 var oneTruthController = angular.module('oneTruthController', [
 		'featureServices', 'breadcrumbServices' ]);
 
-oneTruthController.controller('GroupDetailCtrl', [ '$scope',
-		'$routeParams', 'GroupService', 'Breadcrumbs',
+oneTruthController.controller('GroupDetailCtrl', [ '$scope', '$routeParams',
+		'GroupService', 'Breadcrumbs',
 		function($scope, $routeParams, GroupService, Breadcrumbs) {
+			$scope.breadcrumbs = Breadcrumbs;
 			$scope.group = GroupService.get({
-				path : $routeParams.path,
-			}, function(group) {
-			});
+				path : $routeParams.path
+			}, {});
 
 		} ]);
 
 oneTruthController.controller('FeatureDetailCtrl', [ '$scope', '$routeParams',
 		'FeatureService', 'Breadcrumbs',
 		function($scope, $routeParams, FeatureService, Breadcrumbs) {
-			var features = FeatureService.query({
-				path : $routeParams.path,
-			}, function(features) {
-				$scope.features = features;
-			});
+			$scope.breadcrumbs = Breadcrumbs;
+			$scope.features = FeatureService.query({
+				path : $routeParams.path
+			}, {});
 
 		} ]);
 
-oneTruthController.controller('SearchResultsCtrl', [ '$scope',
-		'$routeParams', 'SearchService',
-		function($scope, $routeParams, SearchService) {
-			var searchResults = SearchService.search({
-				text : $routeParams.text,
-			}, function(searchResults) {
-				$scope.searchResults = searchResults;
-			});
+oneTruthController.controller('SearchResultsCtrl', [ '$scope', '$routeParams',
+		'SearchService', function($scope, $routeParams, SearchService) {
+			$scope.searchResults = SearchService.search({
+				text : $routeParams.text
+			}, {});
 
 		} ]);
 
