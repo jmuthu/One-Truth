@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.onebill.featureservice.auth.FeatureAuthenticator;
+import com.onebill.featureservice.health.FeatureServiceHealthCheck;
 import com.onebill.featureservice.persistence.FeatureRepositoryGit;
 import com.onebill.featureservice.representations.User;
 import com.onebill.featureservice.resources.FeaturesResource;
@@ -50,7 +51,7 @@ public class FeatureService extends Service<FeatureServiceConfiguration> {
 						conf.getAuthenticationCachePolicy()),
 				"Protected Service, credentials are required"));
 		env.addResource(new FeaturesResource(repo));
-//		env.addHealthCheck(new FeatureServiceHealthCheck(conf.getUrl()));
+		env.addHealthCheck(new FeatureServiceHealthCheck(conf.getUrl()));
 	}
 
 }

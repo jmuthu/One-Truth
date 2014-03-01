@@ -9,15 +9,23 @@ import com.onebill.featureservice.representations.FeatureComponent;
 import com.onebill.featureservice.representations.FeatureGroup;
 import com.onebill.featureservice.representations.FeatureSearchResult;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -25,6 +33,7 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +87,8 @@ public class FeatureRepositoryGit {
 		}
 	}
 
-	protected void walkTreeToPath(TreeWalk treeWalk, String path) throws IOException {
+	protected void walkTreeToPath(TreeWalk treeWalk, String path)
+			throws IOException {
 		try {
 			String[] components = path.split("/");
 			// Walk the tree till you find the object in the path
@@ -100,7 +110,7 @@ public class FeatureRepositoryGit {
 	}
 
 	public String getActualPath(String path) {
-		String[] pathElements = path.split("/", 2); 
+		String[] pathElements = path.split("/", 2);
 		// parse out root directory
 		String actualPath = null;
 		if (pathElements.length == 2) {
@@ -126,7 +136,7 @@ public class FeatureRepositoryGit {
 			}
 
 			// Get the contents of the requested group
-			
+
 			while (treeWalk.next()) {
 				if (actualPath != null
 						&& treeWalk.isPathPrefix(actualPath.getBytes(),
@@ -166,7 +176,7 @@ public class FeatureRepositoryGit {
 		}
 		return null;
 	}
-	
+
 	public String getFeatureContents(String id) {
 		try {
 			ObjectId objectId = ObjectId.fromString(id);
@@ -197,13 +207,86 @@ public class FeatureRepositoryGit {
 
 	public List<FeatureSearchResult> query(String query) {
 		try {
-			GrepGit grep = new GrepGit(repository, Pattern.compile(query),
-					walk.parseCommit(head.getObjectId()));
-			return grep.getResults();
+			ObjectReader objectReader = repository.newObjectReader();
+			List<FeatureSearchResult> result = null;
+			try {
+				result = impl(objectReader, query);
+			} finally {
+				objectReader.release();
+			}
+			return result;
 		} catch (IOException io) {
 			LOGGER.info("error" + io.getMessage());
 		}
 		return null;
+	}
+
+	private List<FeatureSearchResult> impl(ObjectReader objectReader,
+			String query) throws IOException {
+		Pattern pattern = Pattern.compile(query);
+		TreeWalk treeWalk = getHeadTree();
+		
+		List<FeatureSearchResult> featureSearchResults = Collections
+				.synchronizedList(new ArrayList<FeatureSearchResult>());
+
+		treeWalk.setRecursive(true);
+
+		while (treeWalk.next()) {
+			AbstractTreeIterator it = treeWalk.getTree(0,
+					AbstractTreeIterator.class);
+			ObjectLoader objectLoader = objectReader.open(treeWalk.getObjectId(0));
+
+			if (!isBinary(objectLoader.openStream())) {
+				List<String> matchedLines = getMatchedLines(objectLoader
+						.openStream(), pattern);
+				if (!matchedLines.isEmpty()) {
+					String path = "OneBill/" + it.getEntryPathString();
+					featureSearchResults.add(new FeatureSearchResult(path,
+							treeWalk.getObjectId(0).getName(), matchedLines));
+					/*
+					 * for (String matchedLine : matchedLines) {
+					 * featureSearchResults.add(new FeatureSearchResult(path,
+					 * objectId.toString(), matchedLine)); System.out
+					 * .println(path + ":" + objectId.getName() + "," +
+					 * objectId.toString() + ":" + matchedLine); }
+					 */
+				}
+			}
+		}
+		return featureSearchResults;
+	}
+
+	private List<String> getMatchedLines(InputStream stream, Pattern pattern) throws IOException {
+		BufferedReader buf = null;
+		try {
+			List<String> matchedLines = new ArrayList<String>();
+			InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+			buf = new BufferedReader(reader);
+			String line;
+			while ((line = buf.readLine()) != null) {
+				Matcher m = pattern.matcher(line);
+				if (m.find()) {
+					matchedLines.add(line);
+				}
+			}
+			return matchedLines;
+		} finally {
+			if (buf != null) {
+				buf.close();
+			}
+		}
+	}
+
+	private static boolean isBinary(InputStream stream) throws IOException {
+		try {
+			return RawText.isBinary(stream);
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				// Ignore, we were just reading
+			}
+		}
 	}
 
 	protected void setGroupComponents(TreeWalk treeWalk,
@@ -214,8 +297,6 @@ public class FeatureRepositoryGit {
 				String Id = treeWalk.getObjectId(0).getName();
 				// String Id = objectId.substring(objectId.indexOf('[') + 1,
 				// objectId.indexOf(']'));
-				AbstractTreeIterator it = treeWalk.getTree(treeIndex,
-						AbstractTreeIterator.class);
 				if (treeWalk.isSubtree()) {
 					featureComponentList.add(new FeatureGroup(treeWalk
 							.getNameString(), Id, ""));

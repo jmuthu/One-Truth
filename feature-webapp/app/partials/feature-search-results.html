@@ -1,12 +1,12 @@
-<div class="container-fluid">
-	<h2>Search Results:</h2>
+<div>
 
-	<dl ng-repeat="result in searchResults">
-		<dt><a href="#/features/feature/{{result.id}}/{{result.path}}">{{result.path}}</a></dt> 
-		<dd>
-			<dl ng-repeat="matchedLine in result.matchedLines  track by $index">
-				<p>{{matchedLine}}</p>
-			</dl>
-		</dd>
-	</dl>
+	<h2>{{searchResults.length}} results found</h2>
+	
+	<div class="list-group">
+		<dl ng-repeat="result in searchResults" class="list-group-item">
+			<a href="#/feature/{{result.path}}">
+					<h4 class="list-group-item-heading">{{result.path}}</h4></a>
+					<p ng-repeat="matchedLine in result.matchedLines  track by $index" class="list-group-item-text">{{ matchedLine }}</p>
+		</dl>
+	</div>
 </div>
